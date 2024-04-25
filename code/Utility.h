@@ -1,29 +1,29 @@
 #pragma once
-#include <Windows.h>
+#include <unistd.h>
+#include <fcntl.h>
+
 class FileStream
 {
 protected:
-	HANDLE		theFile;
-	unsigned int		streamLength;
-	unsigned int		streamOffset;
+    int             theFile;        // File descriptor
+    unsigned int    streamLength;
+    unsigned int    streamOffset;
 
 public:
-	FileStream() : theFile(INVALID_HANDLE_VALUE), streamLength(0), streamOffset(0) {}
-	~FileStream() { if (theFile != INVALID_HANDLE_VALUE) Close(); }
+    FileStream() : theFile(-1), streamLength(0), streamOffset(0) {}
+    ~FileStream() { if (theFile != -1) Close(); }
 
+    int GetHandle() const { return theFile; }
+    bool HitEOF() const { return streamOffset >= streamLength; }
 
-	HANDLE GetHandle() const { return theFile; }
-	bool HitEOF() const { return streamOffset >= streamLength; }
+    bool Open(const char* filePath);
+    void SetOffset(unsigned int inOffset);
 
-	bool Open(const char* filePath);
-	void SetOffset(unsigned int inOffset);
+    void Close()
+    {
+        close(theFile);
+        theFile = -1;
+    }
 
-	void Close()
-	{
-		CloseHandle(theFile);
-		theFile = INVALID_HANDLE_VALUE;
-	}
-
-	void ReadBuf(void* outData, DWORD inLength);
-
+    void ReadBuf(void* outData, size_t inLength);
 };

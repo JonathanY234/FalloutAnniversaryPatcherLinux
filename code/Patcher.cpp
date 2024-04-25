@@ -58,13 +58,15 @@ int main()
 
 	if (!exeFound && !ngFound) {
 		std::cout << "Couldn't open Fallout3.exe. Make sure the patcher is placed in Fallout 3 installation folder.\n";
-		system("@pause");
+		std::cout << "Press Enter to continue...";
+    std::cin.ignore(); // Wait for user to press Enter
 		return 0;
 	}
 
 	if (strcmp(outHash, f3_1703_mod) == 0 || strcmp(ngHash, f3_1703_mod) == 0) {
 		std::cout << "The game is already patched.\n";
-		system("@pause");
+		std::cout << "Press Enter to continue...";
+    std::cin.ignore(); // Wait for user to press Enter
 		return 0;
 	}
 
@@ -75,7 +77,8 @@ int main()
 
 	if (!steamMode && !gogMode && !ngMode && !updateMode) {
 		std::cout << "Invalid executable.\n";
-		system("@pause");
+		std::cout << "Press Enter to continue...";
+    std::cin.ignore(); // Wait for user to press Enter
 		return 0;
 	}
 
@@ -89,13 +92,14 @@ int main()
 			std::ostreambuf_iterator<char>(output));
 		input.close();
 		output.close();
-		sprintf(commandline, "\"\"%s\\xdelta3.exe\" -v -d -f -s \"%s\\Fallout3.exe.temp\" \"%s\\patch_update.vcdiff\" \"%s\\Fallout3.exe\"\"", cPath, cPath, cPath, cPath);
+		sprintf(commandline, "\"%s/xdelta3\" -v -d -f -s \"%s/Fallout3.exe.temp\" \"%s/patch_update.vcdiff\" \"%s/Fallout3.exe\"", cPath, cPath, cPath, cPath);
 		system(commandline);
 		if (GetSHA1File(exe_path.c_str(), outHash) && (strcmp(outHash, f3_1703_mod) == 0)) {
 			std::cout << "\nPatching  completed successfully.\n";
 		}
 		remove(temp_update_path.c_str());
-		system("@pause");
+		std::cout << "Press Enter to continue...";
+    std::cin.ignore(); // Wait for user to press Enter
 		return 0;
 	}
 
@@ -110,7 +114,7 @@ int main()
 		input.close();
 		output.close();
 		std::cout << "\nBackup created.\n\n";
-		sprintf(commandline, "\"\"%s\\xdelta3.exe\" -v -d -f -s \"%s\\Fallout3ng_backup.exe\" \"%s\\patch_steam.vcdiff\" \"%s\\Fallout3ng.exe\"\"", cPath, cPath, cPath, cPath);
+		sprintf(commandline, "\"%s/xdelta3\" -v -d -f -s \"%s/Fallout3ng_backup.exe\" \"%s/patch_steam.vcdiff\" \"%s/Fallout3ng.exe\"", cPath, cPath, cPath, cPath);
 		system(commandline);
 		if (GetSHA1File(nogore_path.c_str(), ngHash) && (strcmp(ngHash, f3_1703_mod) == 0)) {
 			std::cout << "\nPatching NoGore completed successfully.\n";
@@ -130,10 +134,12 @@ int main()
 		output.close();
 		std::cout << "\nBackup created.\n\n";
 		if (steamMode) {
-			sprintf(commandline, "\"\"%s\\xdelta3.exe\" -v -d -f -s \"%s\\Fallout3_backup.exe\" \"%s\\patch_steam.vcdiff\" \"%s\\Fallout3.exe\"\"", cPath, cPath, cPath, cPath);
+			//sprintf(commandline, "\"\"%s\\xdelta3.exe\" -v -d -f -s \"%s\\Fallout3_backup.exe\" \"%s\\patch_steam.vcdiff\" \"%s\\Fallout3.exe\"\"", cPath, cPath, cPath, cPath);
+			sprintf(commandline, "\"%s/xdelta3\" -v -d -f -s \"%s/Fallout3_backup.exe\" \"%s/patch_steam.vcdiff\" \"%s/Fallout3.exe\"", cPath, cPath, cPath, cPath);
 		}
 		else if (gogMode) {
-			sprintf(commandline, "\"\"%s\\xdelta3.exe\" -v -d -f -s \"%s\\Fallout3_backup.exe\" \"%s\\patch_gog.vcdiff\" \"%s\\Fallout3.exe\"\"", cPath, cPath, cPath, cPath);
+			//sprintf(commandline, "\"\"%s\\xdelta3.exe\" -v -d -f -s \"%s\\Fallout3_backup.exe\" \"%s\\patch_gog.vcdiff\" \"%s\\Fallout3.exe\"\"", cPath, cPath, cPath, cPath);
+			sprintf(commandline, "\"%s/xdelta3\" -v -d -f -s \"%s/Fallout3_backup.exe\" \"%s/patch_gog.vcdiff\" \"%s/Fallout3.exe\"", cPath, cPath, cPath, cPath);
 		}
 		system(commandline);
 		
@@ -143,7 +149,8 @@ int main()
 		}
 
 	}
-	system("@pause");
+	std::cout << "Press Enter to continue...";
+    std::cin.ignore(); // Wait for user to press Enter
 	
 }
 
