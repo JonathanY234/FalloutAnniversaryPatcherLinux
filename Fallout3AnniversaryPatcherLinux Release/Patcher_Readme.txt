@@ -1,5 +1,5 @@
 Installation:
-Unpack ALL files from the archive to Fallout 3 installation folder where Fallout3.exe is (make sure it didn't create a subfolder), run Patcher.exe.
+Unpack ALL files from the archive to Fallout 3 installation folder where Fallout3.exe is (make sure it didn't create a subfolder), run the file "Patcher".
 
 Features:
     Downgrades the game from October 2021 update (1.7.0.4) to 1.7.0.3 which is widely supported by other mods, most notably FOSE
