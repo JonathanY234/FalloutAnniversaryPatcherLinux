@@ -1,0 +1,1 @@
+ g++ -o Patcher code/Patcher.cpp code/sha1.cpp code/Utility.cpp -std=c++11

@@ -34,7 +34,7 @@ void FileStream::SetOffset(unsigned int inOffset)
 //	ReadFile(theFile, outData, inLength, &bytesRead, NULL);
 //	streamOffset += bytesRead;
 //}
-void FileStream::ReadBuf(void* outData, DWORD inLength)
+void FileStream::ReadBuf(void* outData, size_t inLength)
 {
     ssize_t bytesRead = read(theFile, outData, inLength);
     streamOffset += bytesRead;

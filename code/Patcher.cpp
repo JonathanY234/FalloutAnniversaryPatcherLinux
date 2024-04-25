@@ -3,6 +3,8 @@
 #include "Utility.h"
 #include <fstream>
 #include <iostream>
+#include <unistd.h> // Include this header for POSIX file descriptors
+#include <cstring> // Include this header for strcmp function
 
 static const char* f3_1704_steam = "6D09781426A5C61AED59ADDEC130A8009849E3C7";
 static const char* f3_1703_gog = "FEB875F0EEC87D2D4854C56DD9CF1F75EC07A3B3";
@@ -16,15 +18,15 @@ bool GetSHA1File(const char* filePath, char* outHash)
 
 	SHA1 sha;
 
-	HANDLE handle = sourceFile.GetHandle();
+	int handle = sourceFile.GetHandle();
 
 	char buffer[0x400];
 	unsigned int offset = 0;
-	DWORD length;
+	unsigned int length;
 
 	while (!sourceFile.HitEOF())
 	{
-		ReadFile(handle, buffer, 0x400, &length, NULL);
+		length = read(handle, buffer, 0x400);
 		offset += length;
 		sourceFile.SetOffset(offset);
 		sha.addBytes(buffer, length);
@@ -32,8 +34,8 @@ bool GetSHA1File(const char* filePath, char* outHash)
 	sourceFile.Close();
 	unsigned char* digest = sha.getDigest();
 
-	for (byte idx = 0; idx < 0x14; idx++, outHash += 2)
-		sprintf_s(outHash, 3, "%02X", digest[idx]);
+	for (unsigned char idx = 0; idx < 0x14; idx++, outHash += 2)
+		sprintf(outHash, "%02X", digest[idx]);
 	return true;
 }
 
@@ -41,17 +43,27 @@ int main()
 {
     char outHash[0x29] = "\0";
 	char ngHash[0x29] = "\0";
-	char filename[MAX_PATH];
-	char commandline[MAX_PATH];
-	GetModuleFileNameA(NULL, filename, MAX_PATH);
+	const int PATH_MAX = pathconf(".", _PC_PATH_MAX);//little hack to make it work
+	char filename[PATH_MAX];
+	char commandline[PATH_MAX];
+	//GetModuleFileNameA(NULL, filename, PATH_MAX);
+	ssize_t len = readlink("/proc/self/exe", filename, PATH_MAX);
+	if (len != -1) {
+	    filename[len] = '\0'; // Null-terminate the string
+	} else {
+	    // Handle error
+		std::cerr << "Error: Couldnt find the file path." << std::endl;
+    	exit(EXIT_FAILURE);
+	}
+
 	std::string::size_type pos = std::string(filename).find_last_of("\\/");
 	std::string path = std::string(filename).substr(0, pos);
 	const char* cPath = path.c_str();
-	std::string exe_path = path + "\\Fallout3.exe";
-	std::string nogore_path = path + "\\Fallout3ng.exe";
-	std::string backup_path = path + "\\Fallout3_backup.exe";
-	std::string nogore_backup_path = path + "\\Fallout3ng_backup.exe";
-	std::string temp_update_path = path +"\\Fallout3.exe.temp";
+	std::string exe_path = path + "/Fallout3.exe";
+	std::string nogore_path = path + "/Fallout3ng.exe";
+	std::string backup_path = path + "/Fallout3_backup.exe";
+	std::string nogore_backup_path = path + "/Fallout3ng_backup.exe";
+	std::string temp_update_path = path +"/Fallout3.exe.temp";
 
 	bool exeFound = GetSHA1File(exe_path.c_str(), outHash);
 	bool ngFound = GetSHA1File(nogore_path.c_str(), ngHash);
@@ -59,7 +71,7 @@ int main()
 	if (!exeFound && !ngFound) {
 		std::cout << "Couldn't open Fallout3.exe. Make sure the patcher is placed in Fallout 3 installation folder.\n";
 		std::cout << "Press Enter to continue...";
-    std::cin.ignore(); // Wait for user to press Enter
+    	std::cin.ignore(); // Wait for user to press Enter
 		return 0;
 	}
 
